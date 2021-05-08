@@ -12,3 +12,5 @@ GAMEPAD2
         (obs: mereu sunt intre 0 si 36 // sunt invers a si y pentru ca stateurile incep de sus nu stiu daca are sens ma rog)
     dpad-up - adjustare unghi lansator in sus
     dpad-left - adjustare unghi lansator in jos
+    x - reseteaza la unghiul de inceput
+    left_trigger - slow mode pentru unghi (face schimbarea mai precisa)

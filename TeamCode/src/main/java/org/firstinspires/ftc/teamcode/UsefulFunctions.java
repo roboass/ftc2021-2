@@ -1,10 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -20,6 +24,10 @@ public class UsefulFunctions extends LinearOpMode {
     public static double currentLaunchAngle = 0, previousLaunchAngle = 0;
     public static int currentClawState = 0;
 
+    public double startAngle = 58;
+    public double addedAngle = 2.5;
+    public double powershotAngle = 40;
+
     public static double ticks_rev = 753.2;
     public static int gear_ratio = 2;
     public static int diameter_mm = 100;
@@ -29,10 +37,10 @@ public class UsefulFunctions extends LinearOpMode {
 
     public Thread launchServoThread = new Thread() {
         public void run() {
-            launchServo.setPosition(-0.17);
+            launchServo.setPosition(-0.55);
             try {
                 Thread.sleep(1000);
-                launchServo.setPosition(0.17);
+                launchServo.setPosition(0.55);
                 Thread.sleep(700);
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -51,7 +59,7 @@ public class UsefulFunctions extends LinearOpMode {
         }
     };
 
-    //public BNO055IMU gyro;
+    public BNO055IMU gyro;
     public Orientation crtangle = new Orientation();
 
     public void Initialise() {
@@ -97,14 +105,14 @@ public class UsefulFunctions extends LinearOpMode {
         currentClawState = 0;
 
         //Partea drepta mere in fata
-        /*BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.mode                = BNO055IMU.SensorMode.IMU;
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         parameters.loggingEnabled      = false;
         gyro = hardwareMap.get(BNO055IMU.class, "imu");
         gyro.initialize(parameters);
-        while (!gyro.isGyroCalibrated() && opModeIsActive())
+        /*while (!gyro.isGyroCalibrated() && opModeIsActive())
         {
             telemetry.addData("IMU is calibrating!", "Please wait.");
             telemetry.update();
@@ -166,17 +174,41 @@ public class UsefulFunctions extends LinearOpMode {
         trgtbl = crticksbl - leftControl * ticksToMove;
         trgtbr = crticksbr + rightControl * ticksToMove;
 
+        double errorThreshold = 104;
+        int  daria = 0;
         SwitchMotorModes(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontleft.setTargetPosition(trgtfl);
-        frontright.setTargetPosition(trgtfr);
-        backleft.setTargetPosition(trgtbl);
-        backright.setTargetPosition(trgtbr);
-        SwitchMotorModes(DcMotor.RunMode.RUN_TO_POSITION);
-        ApplyMotorValues(new MotorValues(motorPower));
+        while(Math.abs(trgtbl - crticksbl) > errorThreshold && Math.abs(trgtbr - crticksbr) > errorThreshold
+        && Math.abs(trgtfl - crticksfl) > errorThreshold && Math.abs(trgtfr - crticksfr) > errorThreshold) {
+            frontleft.setTargetPosition(trgtfl);
+            frontright.setTargetPosition(trgtfr);
+            backleft.setTargetPosition(trgtbl);
+            backright.setTargetPosition(trgtbr);
+            UpdateTicks();
+            UpdateOrientation();
+            SwitchMotorModes(DcMotor.RunMode.RUN_TO_POSITION);
+            ApplyMotorValues(new MotorValues(motorPower));
+            daria++;
+            if(daria >= 2)
+            {
+                telemetry.addData("numar daria:", daria);
+                telemetry.update();
+            }
+        }
+
 
         while ((frontleft.isBusy() && frontright.isBusy() && backleft.isBusy() && backright.isBusy()) && opModeIsActive()) {
             UpdateTicks();
             UpdateOrientation();
+        }
+        ApplyMotorValues(new MotorValues(0));
+        UpdateTicks();
+        UpdateOrientation();
+
+        //Asumam ca (e sigur): fl > 0, fr < 0
+        if(Math.abs(crticksfl) > Math.abs(crticksfr)) {
+            frontleft.setTargetPosition(crticksfl - Math.abs(crticksfr - crticksfl));
+        } else {
+            frontright.setTargetPosition(crticksfr + Math.abs(crticksfr - crticksfl));
         }
         ApplyMotorValues(new MotorValues(0));
         UpdateTicks();
@@ -245,7 +277,7 @@ public class UsefulFunctions extends LinearOpMode {
     }
 
     public void UpdateOrientation() {
-        //crtangle = gyro.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        crtangle = gyro.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
     }
 
     public void InitialiseVision() {

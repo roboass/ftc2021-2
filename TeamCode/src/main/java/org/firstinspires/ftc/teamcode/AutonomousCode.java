@@ -52,6 +52,7 @@ public class AutonomousCode extends UsefulFunctions {
 
         String startCount = detector.count;
         telemetry.addData("start count", startCount);
+        telemetry.addData( "Crt ticks fl fr bl br", crticksfl + " " + crticksfr + "  " + crticksbl + " " + crticksbr);
         telemetry.update();
 
         MoveRotation(750, true);
@@ -59,12 +60,15 @@ public class AutonomousCode extends UsefulFunctions {
         sleep(100);
         MoveRotation(680, false);
 
+        telemetry.addData( "Crt ticks fl fr bl br", crticksfl + " " + crticksfr + "  " + crticksbl + " " + crticksbr);
+        telemetry.update();
+
         if(startCount == "ZERO") {
             AutonomousMove(in_to_mm(4 * 12 + 12), 0);
 
             sleep(100);
             AutonomousMove(-in_to_mm(9), 0);
-            AutonomousMove(0, -in_to_mm(24));
+            AutonomousMove(0, -in_to_mm(20));
         } else if(startCount == "ONE") {
             AutonomousMove(in_to_mm(6 * 12), 0);
             sleep(50);
@@ -72,6 +76,9 @@ public class AutonomousCode extends UsefulFunctions {
             AutonomousMove(500, 0);
             sleep(50);
             MoveRotation(450, true); //old x_mm = 500
+
+            telemetry.addData( "Crt ticks fl fr bl br", crticksfl + " " + crticksfr + "  " + crticksbl + " " + crticksbr);
+            telemetry.update();
 
             sleep(100);
             AutonomousMove(-in_to_mm(3 * 12), 0);
@@ -83,22 +90,24 @@ public class AutonomousCode extends UsefulFunctions {
             AutonomousMove(0, -in_to_mm(20));
         }
 
-        AddToLaunchAngle(57);
+        telemetry.addData( "Crt ticks fl fr bl br", crticksfl + " " + crticksfr + "  " + crticksbl + " " + crticksbr);
+        telemetry.update();
+
+        AddToLaunchAngle(startAngle);
         launchMotor.setPower(1);
-        launchServoThread.run();
-        launchServoThread.run();
-        launchServoThread.run();
-        launchServoThread.run();
-        launchServoThread.run();
+        sleep(100);
+        for(int i = 0; i < 3; i++)
+        {
+            sleep(150);
+            launchServoThread.run();
+        }
         launchMotor.setPower(0);
         AddToLaunchAngle(-currentLaunchAngle);
 
         AutonomousMove(in_to_mm(16), 0);
 
         while (opModeIsActive()) {
-
-
-            //telemetry.addData("Status", "Run Time: " + runtime.toString());
+            //telemetry.addData( "Status", "Run Time: " + runtime.toString());
             //telemetry.update();
         }
     }

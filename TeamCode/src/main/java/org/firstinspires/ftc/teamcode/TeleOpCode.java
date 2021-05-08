@@ -54,12 +54,14 @@ public class TeleOpCode extends UsefulFunctions {
         waitForStart();
         runtime.reset();
 
-        AddToLaunchAngle(31);
+        AddToLaunchAngle(startAngle);
 
         boolean dpadupLock = false, dpaddownLock = false;
         boolean ylock = false, alock = false;
         boolean rightBumperLock = false;
         boolean leftBumper2Lock = false, leftBumper2ModeActive = false;
+        boolean xLock = false;
+        boolean bLock = false;
 
         while (opModeIsActive()) {
             TeleOpDrive();
@@ -118,7 +120,7 @@ public class TeleOpCode extends UsefulFunctions {
             if(gamepad2.dpad_up) {
                 if(!dpadupLock) {
                     dpadupLock = true;
-                    AddToLaunchAngle(2.5);
+                    AddToLaunchAngle(addedAngle);
                 }
             } else if(dpadupLock) {
                 dpadupLock = false;
@@ -127,11 +129,34 @@ public class TeleOpCode extends UsefulFunctions {
             if(gamepad2.dpad_down) {
                 if(!dpaddownLock) {
                     dpaddownLock = true;
-                    AddToLaunchAngle(-2.5);
+                    AddToLaunchAngle(-addedAngle);
                 }
             } else if(dpaddownLock) {
                 dpaddownLock = false;
             }
+
+            if(gamepad2.x) {
+                if(!xLock) {
+                    xLock = true;
+                    AddToLaunchAngle(-currentLaunchAngle + startAngle); //reseteaza la start angle
+                }
+            } else if(xLock) {
+                xLock = false;
+            }
+
+            if(gamepad2.b) {
+                if(!bLock) {
+                    bLock = true;
+                    AddToLaunchAngle(-currentLaunchAngle + powershotAngle); //reseteaza la start angle
+                }
+            } else if(bLock) {
+                bLock = false;
+            }
+
+            if(gamepad2.left_trigger > 0.5f)
+                addedAngle = 1.0;
+            else
+                addedAngle = 2.5;
 
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Current launch angle:", currentLaunchAngle);
