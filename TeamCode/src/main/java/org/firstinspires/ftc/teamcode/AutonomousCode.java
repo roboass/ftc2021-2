@@ -66,17 +66,15 @@ public class AutonomousCode extends UsefulFunctions {
             AutonomousMove(-in_to_mm(9), 0);
             AutonomousMove(0, -in_to_mm(24));
         } else if(startCount == "ONE") {
-            AutonomousMove(in_to_mm(5 * 12 + 12), 0);
+            AutonomousMove(in_to_mm(6 * 12), 0);
             sleep(50);
             MoveRotation(500, false);
             AutonomousMove(500, 0);
             sleep(50);
-            MoveRotation(500, true);
+            MoveRotation(450, true); //old x_mm = 500
 
             sleep(100);
             AutonomousMove(-in_to_mm(3 * 12), 0);
-
-
         } else if(startCount == "FOUR") {
             AutonomousMove(in_to_mm(8 * 12 + 12), 0);
 
@@ -85,7 +83,7 @@ public class AutonomousCode extends UsefulFunctions {
             AutonomousMove(0, -in_to_mm(20));
         }
 
-        AddToLaunchAngle(36);
+        AddToLaunchAngle(57);
         launchMotor.setPower(1);
         launchServoThread.run();
         launchServoThread.run();
