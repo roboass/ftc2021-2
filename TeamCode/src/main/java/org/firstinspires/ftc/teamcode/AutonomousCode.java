@@ -59,36 +59,60 @@ public class AutonomousCode extends UsefulFunctions {
         AutonomousMove(150, 0); //old x_mm = 123
         sleep(100);
         MoveRotation(680, false);
+        CorrectAngle(0);
 
         telemetry.addData( "Crt ticks fl fr bl br", crticksfl + " " + crticksfr + "  " + crticksbl + " " + crticksbr);
         telemetry.update();
 
+        TempUpdateAndShowAngle();
+
         if(startCount == "ZERO") {
             AutonomousMove(in_to_mm(4 * 12 + 12), 0);
+
+            TempUpdateAndShowAngle();
 
             sleep(100);
             AutonomousMove(-in_to_mm(9), 0);
             AutonomousMove(0, -in_to_mm(20));
+
+            TempUpdateAndShowAngle();
         } else if(startCount == "ONE") {
-            AutonomousMove(in_to_mm(6 * 12), 0);
+            AutonomousMove(in_to_mm(5.4 * 12), 0);
+
+            TempUpdateAndShowAngle();
+
             sleep(50);
             MoveRotation(500, false);
             AutonomousMove(500, 0);
+
+            TempUpdateAndShowAngle();
+
             sleep(50);
             MoveRotation(450, true); //old x_mm = 500
+            CorrectAngle(0);
 
             telemetry.addData( "Crt ticks fl fr bl br", crticksfl + " " + crticksfr + "  " + crticksbl + " " + crticksbr);
             telemetry.update();
 
+            TempUpdateAndShowAngle();
+
             sleep(100);
             AutonomousMove(-in_to_mm(3 * 12), 0);
+
+            TempUpdateAndShowAngle();
         } else if(startCount == "FOUR") {
             AutonomousMove(in_to_mm(8 * 12 + 12), 0);
+
+            TempUpdateAndShowAngle();
 
             sleep(100);
             AutonomousMove(-in_to_mm(4 * 12 + 10), 0);
             AutonomousMove(0, -in_to_mm(20));
+
+            TempUpdateAndShowAngle();
         }
+
+        sleep(1000); //TEMP
 
         telemetry.addData( "Crt ticks fl fr bl br", crticksfl + " " + crticksfr + "  " + crticksbl + " " + crticksbr);
         telemetry.update();
@@ -106,9 +130,16 @@ public class AutonomousCode extends UsefulFunctions {
 
         AutonomousMove(in_to_mm(16), 0);
 
+
         while (opModeIsActive()) {
             //telemetry.addData( "Status", "Run Time: " + runtime.toString());
             //telemetry.update();
         }
+    }
+
+    void TempUpdateAndShowAngle() {
+        UpdateOrientation();
+        telemetry.addData("Current angle", crtangle.firstAngle);
+        telemetry.update();
     }
 }

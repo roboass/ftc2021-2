@@ -16,6 +16,8 @@ public class ImageDetector extends OpenCvPipeline {
     public double oneRingTotal;
     public double fourRingsTotal;
 
+    Mat matOneRing, matFourRings;
+
     public ImageDetector() {
     }
 
@@ -28,8 +30,8 @@ public class ImageDetector extends OpenCvPipeline {
         }
         Imgproc.cvtColor(workingMatrix, workingMatrix, Imgproc.COLOR_RGB2YCrCb);
 
-        Mat matOneRing = workingMatrix.submat(160, 170, 50, 100);
-        Mat matFourRings = workingMatrix.submat(140, 160, 50, 100);
+        matOneRing = workingMatrix.submat(160, 170, 50, 100);
+        matFourRings = workingMatrix.submat(140, 160, 50, 100);
 
         Imgproc.rectangle(workingMatrix, new Rect(50, 160, 50, 10), new Scalar(0, 255, 0));
         Imgproc.rectangle(workingMatrix, new Rect(50, 140, 50, 20), new Scalar(0, 255, 0));
