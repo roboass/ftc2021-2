@@ -58,44 +58,52 @@ public class AutonomousCode extends UsefulFunctions {
         MoveRotation(750, true);
         AutonomousMove(150, 0); //old x_mm = 123
         sleep(100);
-        MoveRotation(680, false);
+        MoveRotation(720, false);
 
         telemetry.addData( "Crt ticks fl fr bl br", crticksfl + " " + crticksfr + "  " + crticksbl + " " + crticksbr);
         telemetry.update();
 
+        double angleOffset = 0;
         if(startCount == "ZERO") {
-            AutonomousMove(in_to_mm(4 * 12 + 12), 0);
-
+            AutonomousMove(in_to_mm(5 * 12 - 8), 0);
             sleep(100);
-            AutonomousMove(-in_to_mm(9), 0);
+            AutonomousMove(-in_to_mm(12), 0);
+            sleep(50);
             AutonomousMove(0, -in_to_mm(20));
+            sleep(50);
         } else if(startCount == "ONE") {
             AutonomousMove(in_to_mm(6 * 12), 0);
             sleep(50);
             MoveRotation(500, false);
+            sleep(50);
             AutonomousMove(500, 0);
             sleep(50);
             MoveRotation(450, true); //old x_mm = 500
+            sleep(50);
+            AutonomousMove(in_to_mm(10), 0);
 
             telemetry.addData( "Crt ticks fl fr bl br", crticksfl + " " + crticksfr + "  " + crticksbl + " " + crticksbr);
             telemetry.update();
 
             sleep(100);
-            AutonomousMove(-in_to_mm(3 * 12), 0);
+            AutonomousMove(-in_to_mm(3 * 12 - 6), 0);
+            sleep(50);
         } else if(startCount == "FOUR") {
             AutonomousMove(in_to_mm(8 * 12 + 12), 0);
-
             sleep(100);
-            AutonomousMove(-in_to_mm(4 * 12 + 10), 0);
+            AutonomousMove(-in_to_mm(4 * 12 + 18), 0);
+            sleep(50);
             AutonomousMove(0, -in_to_mm(20));
+            sleep(50);
+            angleOffset = -1;
         }
 
         telemetry.addData( "Crt ticks fl fr bl br", crticksfl + " " + crticksfr + "  " + crticksbl + " " + crticksbr);
         telemetry.update();
 
-        AddToLaunchAngle(startAngle);
+        AddToLaunchAngle(startAngle + angleOffset);
         launchMotor.setPower(1);
-        sleep(100);
+        sleep(500);
         for(int i = 0; i < 3; i++)
         {
             sleep(150);
@@ -107,8 +115,8 @@ public class AutonomousCode extends UsefulFunctions {
         AutonomousMove(in_to_mm(16), 0);
 
         while (opModeIsActive()) {
-            //telemetry.addData( "Status", "Run Time: " + runtime.toString());
-            //telemetry.update();
+            telemetry.addData( "Status", "Run Time: " + runtime.toString());
+            telemetry.update();
         }
     }
 }

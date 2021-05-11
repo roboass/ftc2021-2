@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
-public class MotorValues {
+public class  MotorValues {
     public double fl, fr, bl, br;
 
     public double slowModeMultiplier = 0.5;

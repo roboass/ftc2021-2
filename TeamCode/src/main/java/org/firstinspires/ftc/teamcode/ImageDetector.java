@@ -28,12 +28,11 @@ public class ImageDetector extends OpenCvPipeline {
         }
         Imgproc.cvtColor(workingMatrix, workingMatrix, Imgproc.COLOR_RGB2YCrCb);
 
-        Mat matOneRing = workingMatrix.submat(160, 170, 50, 100);
-        Mat matFourRings = workingMatrix.submat(140, 160, 50, 100);
+        Mat matOneRing = workingMatrix.submat(165, 175, 50, 100);
+        Mat matFourRings = workingMatrix.submat(145, 165, 50, 100);
 
-        Imgproc.rectangle(workingMatrix, new Rect(50, 160, 50, 10), new Scalar(0, 255, 0));
-        Imgproc.rectangle(workingMatrix, new Rect(50, 140, 50, 20), new Scalar(0, 255, 0));
-
+        Imgproc.rectangle(workingMatrix, new Rect(50, 165, 50, 10), new Scalar(0, 255, 0));
+        Imgproc.rectangle(workingMatrix, new Rect(50, 145, 50, 20), new Scalar(0, 255, 0));
 
         oneRingTotal = Core.sumElems(matOneRing).val[2];
         fourRingsTotal = Core.sumElems(matFourRings).val[2];

@@ -159,7 +159,11 @@ public class TeleOpCode extends UsefulFunctions {
                 addedAngle = 2.5;
 
             telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Current launch angle:", currentLaunchAngle);
+
+            UpdateTicks();
+            UpdateOrientation();
+            telemetry.addData("Current ticks bl br fl fr", crticksbl + " " + crticksbr + " " + crticksfl + " " + crticksfr);
+            telemetry.addData("Current angle", crtangle.firstAngle);
             telemetry.update();
         }
         //AddToLaunchAngle(currentLaunchAngle);

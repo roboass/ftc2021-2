@@ -151,6 +151,9 @@ public class UsefulFunctions extends LinearOpMode {
         ApplyMotorValues(new MotorValues(motorPower));
 
         while ((frontleft.isBusy() && frontright.isBusy() && backleft.isBusy() && backright.isBusy()) && opModeIsActive()) {
+            /*
+            
+             */
             UpdateTicks();
             UpdateOrientation();
         }
@@ -335,11 +338,9 @@ public class UsefulFunctions extends LinearOpMode {
             }
         }
     }
-
     public void LiftClawState(int state) ///0 - deasupra lansator, 1 - tinut wobble goal, 2 - apucat wobble, 3 - inel
     {
         if (state < 0 || state > 3) return;
-
         if(state == 0)
         {
             previousLaunchAngle = currentLaunchAngle;
@@ -352,7 +353,6 @@ public class UsefulFunctions extends LinearOpMode {
         telemetry.addData("servo position", values[state] - values[currentClawState]);
         currentClawState = state;
     }
-
     public void AddToLaunchAngle(double angle)
     {
         if(currentLaunchAngle + angle <= 90 && currentLaunchAngle + angle >= 0) {
