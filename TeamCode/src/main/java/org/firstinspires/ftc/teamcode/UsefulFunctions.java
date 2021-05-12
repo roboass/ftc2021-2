@@ -128,6 +128,7 @@ public class UsefulFunctions extends LinearOpMode {
      */
     public void AutonomousMove(double x_mm, double y_mm) {
         double motorPower = 1;
+        double initialAngle = crtangle.firstAngle;
         int sideOrFront;
 
         int ticksToMove_x = mm_to_ticks(x_mm);
@@ -152,10 +153,21 @@ public class UsefulFunctions extends LinearOpMode {
 
         while ((frontleft.isBusy() && frontright.isBusy() && backleft.isBusy() && backright.isBusy()) && opModeIsActive()) {
             /*
-            
+            UpdateOrientation();
+            SwitchMotorModes(DcMotor.RunMode.RUN_USING_ENCODER);
+            trgtfl += (crtangle.firstAngle - initialAngle) * ticksPerAngleFL;
+            trgtfr -= (crtangle.firstAngle - initialAngle) * ticksPerAngleFR;
+            trgtbl += (crtangle.firstAngle - initialAngle) * ticksPerAngleBL;
+            trgtbr -= (crtangle.firstAngle - initialAngle) * ticksPerAngleBR;
+
+            frontleft.setTargetPosition(trgtfl);
+            frontright.setTargetPosition(trgtfr);
+            backleft.setTargetPosition(trgtbl);
+            backright.setTargetPosition(trgtbr);
+            SwitchMotorModes(DcMotor.RunMode.RUN_TO_POSITION);
+            ApplyMotorValues(new MotorValues(motorPower));
              */
             UpdateTicks();
-            UpdateOrientation();
         }
         ApplyMotorValues(new MotorValues(0));
         UpdateTicks();
@@ -177,27 +189,15 @@ public class UsefulFunctions extends LinearOpMode {
         trgtbl = crticksbl - leftControl * ticksToMove;
         trgtbr = crticksbr + rightControl * ticksToMove;
 
-        double errorThreshold = 104;
-        int  daria = 0;
         SwitchMotorModes(DcMotor.RunMode.RUN_USING_ENCODER);
-        while(Math.abs(trgtbl - crticksbl) > errorThreshold && Math.abs(trgtbr - crticksbr) > errorThreshold
-        && Math.abs(trgtfl - crticksfl) > errorThreshold && Math.abs(trgtfr - crticksfr) > errorThreshold) {
-            frontleft.setTargetPosition(trgtfl);
-            frontright.setTargetPosition(trgtfr);
-            backleft.setTargetPosition(trgtbl);
-            backright.setTargetPosition(trgtbr);
-            UpdateTicks();
-            UpdateOrientation();
-            SwitchMotorModes(DcMotor.RunMode.RUN_TO_POSITION);
-            ApplyMotorValues(new MotorValues(motorPower));
-            daria++;
-            if(daria >= 2)
-            {
-                telemetry.addData("numar daria:", daria);
-                telemetry.update();
-            }
-        }
-
+        frontleft.setTargetPosition(trgtfl);
+        frontright.setTargetPosition(trgtfr);
+        backleft.setTargetPosition(trgtbl);
+        backright.setTargetPosition(trgtbr);
+        UpdateTicks();
+        UpdateOrientation();
+        SwitchMotorModes(DcMotor.RunMode.RUN_TO_POSITION);
+        ApplyMotorValues(new MotorValues(motorPower));
 
         while ((frontleft.isBusy() && frontright.isBusy() && backleft.isBusy() && backright.isBusy()) && opModeIsActive()) {
             UpdateTicks();
@@ -216,6 +216,45 @@ public class UsefulFunctions extends LinearOpMode {
         ApplyMotorValues(new MotorValues(0));
         UpdateTicks();
         UpdateOrientation();
+    }
+
+    public void CorrectAngle(double correctAngle)
+    {
+        double ticksPerAngle = 29.65;
+
+        UpdateOrientation();
+        UpdateTicks();
+
+        int trgtfl, trgtfr, trgtbl, trgtbr;
+        int ticksToMove = (int) (-(correctAngle - crtangle.firstAngle) * ticksPerAngle);
+        trgtfl = crticksfl + ticksToMove;
+        trgtfr = crticksfr + ticksToMove;
+        trgtbl = crticksbl + ticksToMove;
+        trgtbr = crticksbr + ticksToMove;
+
+        SwitchMotorModes(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontleft.setTargetPosition(trgtfl);
+        frontright.setTargetPosition(trgtfr);
+        backleft.setTargetPosition(trgtbl);
+        backright.setTargetPosition(trgtbr);
+        SwitchMotorModes(DcMotor.RunMode.RUN_TO_POSITION);
+        ApplyMotorValues(new MotorValues(1));
+
+        telemetry.addData("Ticks to move", ticksToMove);
+        telemetry.update();
+
+        double timePerAngle = 1034.0/90;
+        //sleep((long) (Math.abs(correctAngle - crtangle.firstAngle)*timePerAngle));
+        while ((frontleft.isBusy() && frontright.isBusy() && backleft.isBusy() && backright.isBusy()) && opModeIsActive()) {
+            UpdateTicks();
+            UpdateOrientation();
+        }
+        ApplyMotorValues(new MotorValues(0));
+        UpdateTicks();
+        UpdateOrientation();
+
+        telemetry.addData("current angle", crtangle.firstAngle);
+        telemetry.update();
     }
 
     /*Functia care controleaza miscarea in TeleOp.
@@ -346,10 +385,10 @@ public class UsefulFunctions extends LinearOpMode {
             previousLaunchAngle = currentLaunchAngle;
             AddToLaunchAngle(-currentLaunchAngle);
         }
-        double[] values = new double[]{0.15, 0.54, 0.79, 0.9};
+        double[] values = new double[]{0.15, 0.54, 0.79, 0.85};
 
-        liftClawServo1.setPosition(values[state]);// - values[currentClawState]);
-        liftClawServo2.setPosition(values[state]);// - values[currentClawState]);
+        liftClawServo1.setPosition(values[state]);
+        liftClawServo2.setPosition(values[state]);
         telemetry.addData("servo position", values[state] - values[currentClawState]);
         currentClawState = state;
     }
