@@ -24,9 +24,9 @@ public class UsefulFunctions extends LinearOpMode {
     public static double currentLaunchAngle = 0, previousLaunchAngle = 0;
     public static int currentClawState = 0;
 
-    public double startAngle = 58;
+    public double startAngle = 50; //58
     public double addedAngle = 2.5;
-    public double powershotAngle = 40;
+    public double powershotAngle = startAngle - 2.5;
 
     public static double ticks_rev = 753.2;
     public static int gear_ratio = 2;

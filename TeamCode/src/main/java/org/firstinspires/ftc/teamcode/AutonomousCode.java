@@ -46,14 +46,6 @@ public class AutonomousCode extends UsefulFunctions {
         InitialiseVision();
 
         sleep(500);
-        /*for(int i = 1; i < 2; i = 1)
-        {
-            telemetry.addData("Ring size:", detector.count);
-            telemetry.addData("One ring value:", detector.oneRingTotal);
-            telemetry.addData("Four ring value:", detector.fourRingsTotal);
-            telemetry.update();
-
-        }*/
 
         waitForStart();
         runtime.reset();
@@ -75,7 +67,8 @@ public class AutonomousCode extends UsefulFunctions {
 
         double angleOffset = 0;
         if(startCount == "ZERO") {
-            AutonomousMove(in_to_mm(3 * 24), 0);
+            angleOffset = 1;
+            AutonomousMove(in_to_mm(2.8 * 24), 0);
             AutonomousMove(0, in_to_mm(0.25 * 24));
             CorrectAngle(0);
 
@@ -83,18 +76,20 @@ public class AutonomousCode extends UsefulFunctions {
             AutonomousMove(0, -in_to_mm(18.4));
             CorrectAngle(0);
         } else if(startCount == "ONE") {
-            AutonomousMove(in_to_mm(3.1 * 24), 0);
+            AutonomousMove(in_to_mm(3.5 * 24), 0);
             MoveRotation(750, false);
             AutonomousMove(150, 0);
+            AutonomousMove(-150, 0);
             CorrectAngle(0);
 
             AutonomousMove(-in_to_mm(36), 0);
-            AutonomousMove(0, -in_to_mm(6));
+            AutonomousMove(0, -in_to_mm(12));
+            CorrectAngle(0);
         } else if(startCount == "FOUR") {
 
-            angleOffset = 1;
+            //angleOffset = -1;
             AutonomousMove(in_to_mm(4.5 * 24), 0);
-            AutonomousMove(0, in_to_mm(0.25 * 24));
+            AutonomousMove(0, in_to_mm(0.35 * 24));
             CorrectAngle(0);
 
             AutonomousMove(-in_to_mm(4 + 2 * 24), 0);
@@ -105,15 +100,21 @@ public class AutonomousCode extends UsefulFunctions {
         telemetry.addData( "Crt ticks fl fr bl br", crticksfl + " " + crticksfr + "  " + crticksbl + " " + crticksbr);
         telemetry.update();
 
-        AddToLaunchAngle(startAngle  + angleOffset);
+        AddToLaunchAngle(startAngle + angleOffset);
         launchMotor.setPower(1);
         sleep(500);
         for(int i = 0; i < 3; i++)
         {
+            if(i == 0)
+                AddToLaunchAngle(2);
             if(i == 2)
-                AddToLaunchAngle(-1);
+                AddToLaunchAngle(-0.3456);
+
             sleep(150);
             launchServoThread.run();
+
+            if(i == 0)
+                AddToLaunchAngle(-2);
         }
         launchMotor.setPower(0);
         AddToLaunchAngle(-currentLaunchAngle);
