@@ -28,17 +28,20 @@ public class ImageDetector extends OpenCvPipeline {
         }
         Imgproc.cvtColor(workingMatrix, workingMatrix, Imgproc.COLOR_RGB2YCrCb);
 
-        Mat matOneRing = workingMatrix.submat(167, 177, 5, 55);
-        Mat matFourRings = workingMatrix.submat(147, 167, 5, 55);
+        Mat matOneRing = workingMatrix.submat(167, 177, 0, 70);
+        Mat matFourRings = workingMatrix.submat(147, 167, 0, 70);
 
-        Imgproc.rectangle(workingMatrix, new Rect(5, 167, 50, 10), new Scalar(0, 255, 0));
-        Imgproc.rectangle(workingMatrix, new Rect(5, 147, 50, 20), new Scalar(0, 255, 0));
+        Imgproc.rectangle(workingMatrix, new Rect(0, 167, 70, 10), new Scalar(0, 255, 0));
+        Imgproc.rectangle(workingMatrix, new Rect(0, 147, 70, 20), new Scalar(0, 255, 0));
 
         oneRingTotal = Core.sumElems(matOneRing).val[2];
         fourRingsTotal = Core.sumElems(matFourRings).val[2];
 
-       double thresholdOne = 42500, thresholdFour = 90000;
-       if(oneRingTotal < thresholdOne)
+       double thresholdOne = 62500, thresholdFour = 135000; //old thresholdFour = 130000
+       if(fourRingsTotal < thresholdFour) count = "FOUR";
+       else if(oneRingTotal < thresholdOne) count = "ONE";
+       else count = "ZERO";
+       /*if(oneRingTotal < thresholdOne)
        {
            if(fourRingsTotal < thresholdFour)
            {
@@ -46,7 +49,7 @@ public class ImageDetector extends OpenCvPipeline {
            }
            else
                count = "ONE";
-       } else count = "ZERO";
+       } else count = "ZERO";*/
 
         return workingMatrix;
     }

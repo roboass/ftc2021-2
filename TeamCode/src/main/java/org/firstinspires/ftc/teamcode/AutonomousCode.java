@@ -45,31 +45,22 @@ public class AutonomousCode extends UsefulFunctions {
         Initialise();
         InitialiseVision();
 
-        sleep(500);
-
         waitForStart();
         runtime.reset();
 
         sleep(500);
 
         String startCount = detector.count;
-        telemetry.addData("Current ring count:", startCount);
+        StopVision();
+        telemetry.addData("Start ring count:", startCount);
         //telemetry.addData( "Crt ticks fl fr bl br", crticksfl + " " + crticksfr + "  " + crticksbl + " " + crticksbr);
         telemetry.update();
 
-        /*MoveRotation(750, true);
-        sleep(100);
-        AutonomousMove(245, 0); //old x_mm = 123
-        sleep(100);
-        MoveRotation(750, false);
-        CorrectAngle(0);
-        telemetry.addData("Current angle:", crtangle.firstAngle);*/
-
         double angleOffset = 0;
         if(startCount == "ZERO") {
-            angleOffset = 1;
+            angleOffset = -1;
             AutonomousMove(in_to_mm(2.8 * 24), 0);
-            AutonomousMove(0, in_to_mm(0.25 * 24));
+            AutonomousMove(0, in_to_mm(0.3 * 24));
             CorrectAngle(0);
 
             AutonomousMove(-in_to_mm(14), 0);
@@ -78,18 +69,16 @@ public class AutonomousCode extends UsefulFunctions {
         } else if(startCount == "ONE") {
             AutonomousMove(in_to_mm(3.5 * 24), 0);
             MoveRotation(750, false);
-            AutonomousMove(150, 0);
-            AutonomousMove(-150, 0);
+            AutonomousMove(200, 0);
+            AutonomousMove(-200, 0);
             CorrectAngle(0);
 
             AutonomousMove(-in_to_mm(36), 0);
             AutonomousMove(0, -in_to_mm(12));
             CorrectAngle(0);
         } else if(startCount == "FOUR") {
-
-            //angleOffset = -1;
             AutonomousMove(in_to_mm(4.5 * 24), 0);
-            AutonomousMove(0, in_to_mm(0.35 * 24));
+            AutonomousMove(0, in_to_mm(0.4 * 24));
             CorrectAngle(0);
 
             AutonomousMove(-in_to_mm(4 + 2 * 24), 0);
@@ -103,6 +92,20 @@ public class AutonomousCode extends UsefulFunctions {
         AddToLaunchAngle(startAngle + angleOffset);
         launchMotor.setPower(1);
         sleep(500);
+
+        AddToLaunchAngle(2);
+        sleep(150);
+        launchServoThread.run();
+        AddToLaunchAngle(-2);
+
+        sleep(150);
+        launchServoThread.run();
+
+        sleep(150);
+        AddToLaunchAngle(-0.35);
+        launchServoThread.run();
+
+        /*
         for(int i = 0; i < 3; i++)
         {
             if(i == 0)
@@ -115,29 +118,17 @@ public class AutonomousCode extends UsefulFunctions {
 
             if(i == 0)
                 AddToLaunchAngle(-2);
-        }
+        }*/
         launchMotor.setPower(0);
         AddToLaunchAngle(-currentLaunchAngle);
 
         AutonomousMove(in_to_mm(16), 0);
 
         while (opModeIsActive()) {
-            //telemetry.addData( "Status", "Run Time: " + runtime.toString());
-            //telemetry.update();
+            telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.addData("Current ring count:", startCount);
+            telemetry.update();
         }
 
-        /*double temptfl = crticksfl, temptfr = crticksfr, temptbl = crticksbl, temptbr = crticksbr;
-        telemetry.addData( "Initial ticks fl fr bl br", crticksfl + " " + crticksfr + "  " + crticksbl + " " + crticksbr);
-        telemetry.update();
-
-        AutonomousMove(in_to_mm(4 * 24), 0);
-        UpdateOrientation();
-        UpdateTicks();
-        telemetry.addData("Initial ticks fl fr bl br", crticksfl + " " + crticksfr + "  " + crticksbl + " " + crticksbr);
-        telemetry.addData("Crt ticks fl fr bl br", (crticksfl - temptfl) + " " + (crticksfr - temptfr) + "  " + (crticksbl - temptbl) + " " + (crticksbr - temptbr));
-        telemetry.update();
-
-        while (opModeIsActive()) {
-        }*/
     }
 }

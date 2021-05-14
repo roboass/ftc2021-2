@@ -128,7 +128,6 @@ public class UsefulFunctions extends LinearOpMode {
      */
     public void AutonomousMove(double x_mm, double y_mm) {
         double motorPower = 1;
-        double initialAngle = crtangle.firstAngle;
         int sideOrFront;
 
         int ticksToMove_x = mm_to_ticks(x_mm);
@@ -152,21 +151,7 @@ public class UsefulFunctions extends LinearOpMode {
         ApplyMotorValues(new MotorValues(motorPower));
 
         while ((frontleft.isBusy() && frontright.isBusy() && backleft.isBusy() && backright.isBusy()) && opModeIsActive()) {
-            /*
             UpdateOrientation();
-            SwitchMotorModes(DcMotor.RunMode.RUN_USING_ENCODER);
-            trgtfl += (crtangle.firstAngle - initialAngle) * ticksPerAngleFL;
-            trgtfr -= (crtangle.firstAngle - initialAngle) * ticksPerAngleFR;
-            trgtbl += (crtangle.firstAngle - initialAngle) * ticksPerAngleBL;
-            trgtbr -= (crtangle.firstAngle - initialAngle) * ticksPerAngleBR;
-
-            frontleft.setTargetPosition(trgtfl);
-            frontright.setTargetPosition(trgtfr);
-            backleft.setTargetPosition(trgtbl);
-            backright.setTargetPosition(trgtbr);
-            SwitchMotorModes(DcMotor.RunMode.RUN_TO_POSITION);
-            ApplyMotorValues(new MotorValues(motorPower));
-             */
             UpdateTicks();
         }
         ApplyMotorValues(new MotorValues(0));
@@ -206,16 +191,6 @@ public class UsefulFunctions extends LinearOpMode {
         ApplyMotorValues(new MotorValues(0));
         UpdateTicks();
         UpdateOrientation();
-
-        //Asumam ca (e sigur): fl > 0, fr < 0
-        if(Math.abs(crticksfl) > Math.abs(crticksfr)) {
-            frontleft.setTargetPosition(crticksfl - Math.abs(crticksfr - crticksfl));
-        } else {
-            frontright.setTargetPosition(crticksfr + Math.abs(crticksfr - crticksfl));
-        }
-        ApplyMotorValues(new MotorValues(0));
-        UpdateTicks();
-        UpdateOrientation();
     }
 
     public void CorrectAngle(double correctAngle)
@@ -243,8 +218,6 @@ public class UsefulFunctions extends LinearOpMode {
         telemetry.addData("Ticks to move", ticksToMove);
         telemetry.update();
 
-        double timePerAngle = 1034.0/90;
-        //sleep((long) (Math.abs(correctAngle - crtangle.firstAngle)*timePerAngle));
         while ((frontleft.isBusy() && frontright.isBusy() && backleft.isBusy() && backright.isBusy()) && opModeIsActive()) {
             UpdateTicks();
             UpdateOrientation();
@@ -323,30 +296,6 @@ public class UsefulFunctions extends LinearOpMode {
     }
 
     public void InitialiseVision() {
-        /*int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        phoneCam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
-        phoneCam.openCameraDevice();
-        phoneCam.setPipeline(detector);
-        phoneCam.startStreaming(320, 240, OpenCvCameraRotation.SIDEWAYS_LEFT);*/
-
-        /*int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        phoneCam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
-        phoneCam.setPipeline(detector);
-
-        // We set the viewport policy to optimized view so the preview doesn't appear 90 deg
-        // out when the RC activity is in portrait. We do our actual image processing assuming
-        // landscape orientation, though.
-        phoneCam.setViewportRenderingPolicy(OpenCvCamera.ViewportRenderingPolicy.OPTIMIZE_VIEW);
-
-        phoneCam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
-        {
-            @Override
-            public void onOpened()
-            {
-                phoneCam.startStreaming(320,240, OpenCvCameraRotation.SIDEWAYS_LEFT);
-            }
-        });*/
-
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         phoneCam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
         phoneCam.setPipeline(detector);
@@ -358,7 +307,10 @@ public class UsefulFunctions extends LinearOpMode {
                 phoneCam.startStreaming(320, 240, OpenCvCameraRotation.SIDEWAYS_LEFT);
             }
         });
+    }
 
+    public void StopVision() {
+        phoneCam.stopStreaming();
     }
 
     public void GrabClawState(boolean state) {
